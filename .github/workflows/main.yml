@@ -3,6 +3,8 @@
 name: CI
 env:
     TOKEN: $${{ secrets.TOKEN }}
+    APID: $${{ secrets.APID }}
+    HASH: $${{ secrets.HASH }}
 
 # Controls when the workflow will run
 on:
