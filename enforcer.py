@@ -4,13 +4,14 @@ import os
 from pyrogram import Client, filters
 
 nomes = []
-# rus = ["й","ц","у","к","е","н","г","ш","щ","з","х","ф","ы","в","а","п","р","о","л","д","ж","э","я","ч","с","м","и","т","ь","б","ю"]
 
 bot = Client("Enforcer",
             api_id = int(os.environ.get("APID")),
             api_hash = os.environ.get("HASH"),
             bot_token = os.environ.get("TOKEN")
 )
+
+admin = os.environ.get("ADMIN")
 
 @bot.on_message(filters.command("start") & filters.private)
 def start(client, message):
@@ -52,4 +53,20 @@ def ban_rus(client, message):
         f.write("\n")
     f.close()
 
-bot.run()
+
+@bot.on_message(filters.command("logs"))
+def logs(client, message):
+    user = message.from_user.id
+    if int(admin) == int(user):
+        try:
+            doc = open("logs.txt", "r")
+        except:
+            bot.send_message(admin, "O arquivo de logs não existe...")
+        else:
+            bot.send_message(admin, "Aqui estão os logs:")
+            bot.send_document(admin, "logs.txt")
+
+
+
+if __name__ == "__main__":
+    bot.run()
