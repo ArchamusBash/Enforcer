@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 
+import os
 from pyrogram import Client, filters
 
 nomes = []
 # rus = ["й","ц","у","к","е","н","г","ш","щ","з","х","ф","ы","в","а","п","р","о","л","д","ж","э","я","ч","с","м","и","т","ь","б","ю"]
 
 bot = Client("Enforcer",
-            api_id = 19595246,
-            api_hash = "b83c2377bbfa408ef6712336e1a3a460",
-            bot_token = "5194051634:AAHnlTcDwHYDbhSgAv13jkqz4r1c5RUrAxQ"
+            api_id = int(os.environ.get("APID")),
+            api_hash = os.environ.get("HASH"),
+            bot_token = os.environ.get("TOKEN")
 )
 
 @bot.on_message(filters.command("start") & filters.private)
