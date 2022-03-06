@@ -1,70 +1,54 @@
 #!/usr/bin/env python3
 
-import os
-import time
+from pyrogram import Client, filters
 
-from pyrogram import Client, emoji, filters
-from pyrogram.types import Message
-from dotenv import load_dotenv
+nomes = []
+# rus = ["й","ц","у","к","е","н","г","ш","щ","з","х","ф","ы","в","а","п","р","о","л","д","ж","э","я","ч","с","м","и","т","ь","б","ю"]
 
-load_dotenv()
+bot = Client("Enforcer",
+            api_id = 19595246,
+            api_hash = "b83c2377bbfa408ef6712336e1a3a460",
+            bot_token = "5194051634:AAHnlTcDwHYDbhSgAv13jkqz4r1c5RUrAxQ"
+)
 
-app = Client(
-        "Enforcer",
-        api_id    = int(os.getenv("APID")),
-        api_hash  = os.getenv("HASH"),
-        bot_token = os.getenv("TOKEN")
-        )
-
-flood = {}
-time_muted = 720
-admins = {}
-target_group = -1001771832249
-
-def GetAdmins(app: Client, message: Message) -> list:
-    return [
-            admin.user.id
-            for admin in app.get_chat_members(message.chat.id, filter="administrators")
-            ]
-
-@app.on_message(filters.chat(target_group) & filters.new_chat_members)
-def welcome(client, message):
-    new_member = [u.mention for u in message.new_chat_members]
-    text = "Seja bem vindo {}!\nTe enviei as regras no privado.".format(new_member, message.from_user.id).replace("[","").replace("]","").replace("'","")
-    message.reply(text, disable_web_page_preview=True)
-
-@app.on_message(filters.group)
-def floodw(app, message: Message):
-    chat_id = -1001771832249
-    user_id = message.from_user.id
-    print(chat_id)
-    try:
-        if user_id not in admins[chat_id]:
-            try:
-                flood[chat_id][user_id] += 1
-            except KeyError:
-                flood[chat_id][user_id] -= 1
-        else:
-            if flood[chat_id][user_id] > 4:
-                app.restrict_chat_member(chat_id, user_id, int(time.time()) + time_muted)
-                message.reply_text(f"Por favor evite spam!\nUsuario {user_id} mutado.")
-            else:
-                time.sleep(1.5)
-                try:
-                    flood[chat_id][user_id] -= 1
-                    if flood[chat_id][user_id] == 0:
-                        del flood[chat_id][user_id]
-                except KeyError as err:
-                    print(err)
-    except KeyError:
-        admins[chat_id] = GetAdmins(app, message)
-
-@app.on_message(filters.command("start") & filters.group)
+@bot.on_message(filters.command("start") & filters.private)
 def start(client, message):
-    usr = message.from_user.first_name
-    app.send_message(message.chat.id, f"Eai, {usr}!")
+    message.reply("Adicione-me em um grupo")
 
-if __name__ == "__main__":
-    app.run()
+@bot.on_message(filters.command("start") & filters.group)
+def starte(client, message):
+    message.reply("Modo de uso: de adm para o bot e deixe que ele faça o resto.")
 
+@bot.on_message(filters.group & filters.new_chat_members)
+def ban_rus(client, message):
+    ide = message.new_chat_members
+    usr = [u.mention for u in message.new_chat_members]
+    txt_ban = "{} enviado pro Gulag.".format(ide).replace("[","").replace("]","").replace("'","")
+    ide = str(ide).split(",")
+    ide = list(ide)
+    lol = str(ide[0]).replace("[pyrogram.types.User(id=","")
+    rm  = "href=tg://user?id=" + lol
+    print(lol)
+    rus = ["й","ц","у","к","е","н","г","ш","щ","з","х","ф","ы","в","а","п","р","о","л","д","ж","э","я","ч","с","м","и","т","ь","б","ю"]
+    name = [f.mention for f in message.new_chat_members]    
+    name = str(name)
+    name = name.replace("'","").replace("[","").replace("]","").replace("<a href=tg://user?id=5111841981>","").replace("</a>","")
+    name = list(name)
+    print(name)
+    for l in rus:
+        if l in name:
+            print(l)
+            bot.ban_chat_member(message.chat.id, lol)
+            bot.send_message(message.chat.id, "Usuario {} foi enviado pro Gulag.".format(lol))
+            break
+        
+    with open("logs.txt", "a") as f:
+        out = str(ide)
+        f.write(str(out))
+        print(out)
+        f.write("\n")
+        f.write("-------------------------------")
+        f.write("\n")
+    f.close()
 
+bot.run()
