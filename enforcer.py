@@ -6,7 +6,7 @@ from pyrogram import Client, filters
 nomes = []
 
 bot = Client("Enforcer",
-            api_id = os.environ.get("APID")
+            api_id = int(os.environ.get("APID")),
             api_hash = os.environ.get("HASH"),
             bot_token = os.environ.get("TOKEN")
 )
